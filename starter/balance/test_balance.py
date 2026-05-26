@@ -2,6 +2,7 @@ import unittest
 from balance.balance import Balance
 from transaction.transaction import Transaction
 from transaction.transaction_category import TransactionCategory
+from transaction.transaction_command import IncomeCommand
 
 class TestBalance(unittest.TestCase):
 

@@ -6,7 +6,7 @@ from transaction.transaction import Transaction
 from transaction.transaction_category import TransactionCategory
 from transaction.transaction_adapter import TransactionAdapter
 from transaction.external_income_transaction import ExternalFreelanceIncome
-
+from transaction.transaction_command import IncomeCommand, ExpenseCommand, CommandManager
 
 def main():
     print("Adding transactions...")
@@ -15,6 +15,7 @@ def main():
     balance = Balance.get_instance()
     print_observer = BalanceObserverFactory.create_observer("print")
     low_balance_observer = BalanceObserverFactory.create_observer("low_balance_alert", threshold=100)
+    manager = CommandManager()
     
     balance.register_observer(low_balance_observer)
     balance.register_observer(print_observer)
@@ -36,7 +37,8 @@ def main():
 
     # TODO: Apply all transactions to balance
     for transaction in all_transactions:
-        balance.apply_transaction(transaction)
+        command = IncomeCommand(balance, transaction.amount) if transaction.category == TransactionCategory.INCOME else ExpenseCommand(balance, transaction.amount)
+        manager.execute(command)
 
 if __name__ == "__main__":
     main()
