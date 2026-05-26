@@ -42,6 +42,28 @@ class TestBalance(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.balance.apply_transaction(t)
 
+    def test_registers_observer(self):
+        class MockObserver:
+            def __init__(self):
+                self.updated = False
+                self.last_balance = None
+                self.last_transaction = None
+
+            def update(self, balance, transaction):
+                self.updated = True
+                self.last_balance = balance
+                self.last_transaction = transaction
+
+        observer = MockObserver()
+        self.balance.register_observer(observer)
+
+        t = Transaction(200, TransactionCategory.INCOME)
+        self.balance.apply_transaction(t)
+
+        self.assertTrue(observer.updated)
+        self.assertEqual(observer.last_balance, 200)
+        self.assertEqual(observer.last_transaction, t)
+
     def test_reset(self):
         self.balance.add_income(100)
         self.balance.add_expense(50)
